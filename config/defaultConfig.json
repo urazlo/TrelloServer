@@ -1,0 +1,20 @@
+{
+  "development": {
+    "port": 4000,
+    "mongoConnection": "mongodb://localhost:27017",
+    "dbName": "users",
+    "jwtSecret": "12345",
+    "hashType": "md5",
+    "hashKey": "123456",
+    "expiresIn": "1h"
+  },
+  "production": {
+    "port": 4000,
+    "mongoConnection": "mongodb://localhost:27017",
+    "dbName": "users",
+    "jwtSecret": "12345",
+    "hashType": "md5",
+    "hashKey": "123456",
+    "expiresIn": "1h"
+  }
+}
