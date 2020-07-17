@@ -1,16 +1,16 @@
 const express = require('express');
 const userController = require('../controllers/user');
 const router = express.Router();
-// const isAuth = require('../middlewhares/isAuth');
-// const isAdmin = require('../middlewhares/isAdmin');
+const isAuth = require('../middlewhares/isAuth');
+const isAdmin = require('../middlewhares/isAdmin');
 
-// router.use(isAuth);
+router.use(isAuth);
 
 router.get('/', userController.getUsers);
 
 // router.get('/', isAdmin, userController.getUsers);
 
-// router.post('/', isAdmin, userController.createUser);
+router.post('/', isAdmin, userController.createUser);
 
 // router.get('/:id', userController.getUser);
 

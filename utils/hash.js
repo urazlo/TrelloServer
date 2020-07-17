@@ -1,5 +1,5 @@
 const crypto = require('crypto');
-const config = require('../config').default;
+const config = require('../config');
 
 module.exports = (password) => {
   return crypto

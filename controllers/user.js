@@ -43,36 +43,36 @@ async function getUsers(req, res) {
 //   }
 // };
 
-// async function createUser(req, res) {
-//   try {
-//     let {
-//       email,
-//       login,
-//       password
-//     } = req.body;
+async function createUser(req, res) {
+  try {
+    let {
+      email,
+      login,
+      password
+    } = req.body;
 
-//     if (!validator.password(password)) {
-//       return res.status(400).send('Invalid password');
-//     }
+    if (!validator.password(password)) {
+      return res.status(400).send('Invalid password');
+    }
 
-//     let newUser = await db.User.create({ email, login, password: hash(password) });
+    let newUser = await db.User.create({ email, login, password: hash(password) });
 
-//     newUser = newUser.toJSON();
-//     delete newUser.password;
+    newUser = newUser.toJSON();
+    delete newUser.password;
 
-//     res.json(newUser);
-//   }
-//   catch (err) {
-//     const message = errorHandler(err);
+    res.json(newUser);
+  }
+  catch (err) {
+    const message = errorHandler(err);
 
-//     if (message) {
-//       return res.status(400).send(message);
-//     }
+    if (message) {
+      return res.status(400).send(message);
+    }
 
-//     console.error(err);
-//     res.sendStatus(500);
-//   }
-// };
+    console.error(err);
+    res.sendStatus(500);
+  }
+};
 
 // async function deleteUser(req, res) {
 //   try {
@@ -155,7 +155,7 @@ async function getUsers(req, res) {
 module.exports = {
   getUsers,
   // getUser,
-  // createUser,
+  createUser,
   // deleteUser,
   // updateUser
 };
