@@ -8,6 +8,6 @@ router.post('/sign-in', controller.signIn);
 
 router.post('/sign-up', controller.signUp);
 
-// router.get('/check', isAuth, controller.check);
+router.get('/check', isAuth, controller.check);
 
 module.exports = router;
