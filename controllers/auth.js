@@ -7,12 +7,11 @@ const errorHandler = require('../utils/errorHandler');
 const signIn = async (req, res) => {
   try {
     let {
-      login,
-      email,
+      userName,
       password,
     } = req.body;
 
-    let user = await db.User.findOne({ $or: [{ email }, { login }] });
+    let user = await db.User.findOne({ $or: [{ email: userName }, { login: userName }] });
 
     if (!user) {
       return res.sendStatus(404);

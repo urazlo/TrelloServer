@@ -17,7 +17,7 @@ const userSchema = new Schema({
   login: {
     type: String,
     required: true,
-    minlength: 6,
+    minlength: 3,
     maxlength: 25,
     unique: [true, 'Login is already exist']
   },

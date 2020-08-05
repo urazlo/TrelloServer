@@ -16,10 +16,6 @@ const errorHandler = (err) => {
     return 'Invalid email';
   }
 
-  if (err.message.includes('Cast to ObjectId failed for value')) {
-    return 'Invalid ID';
-  }
-
   return '';
 };
 

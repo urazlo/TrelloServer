@@ -2,7 +2,7 @@
   "development": {
     "port": 4000,
     "mongoConnection": "mongodb://localhost:27017",
-    "dbName": "users",
+    "dbName": "TrelloCloneDB",
     "jwtSecret": "12345",
     "hashType": "md5",
     "hashKey": "123456",
