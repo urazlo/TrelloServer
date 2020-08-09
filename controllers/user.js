@@ -1,7 +1,7 @@
 const db = require('../models');
-// const hash = require('../utils/hash');
-// const validator = require('../utils/validator');
-// const errorHandler = require('../utils/errorHandler');
+const hash = require('../utils/hash');
+const validator = require('../utils/validator');
+const errorHandler = require('../utils/errorHandler');
 
 async function getUsers(req, res) {
   try {
@@ -79,7 +79,7 @@ async function createUser(req, res) {
 //     const { id } = req.params;
 
 //     const existUser = await db.User.findById(id);
-    
+
 //     if (!existUser) {
 //       return res.sendStatus(400);
 //     }
@@ -103,59 +103,63 @@ async function createUser(req, res) {
 //   }
 // };
 
-// async function updateUser(req, res) {
-//   try {
-//     const { id } = req.params;
+async function updateUser(req, res) {
+  try {
+    const { id } = req.params;
 
-//     let {
-//       email,
-//       login,
-//       password,
-//       role
-//     } = req.body;
+    let {
+      email,
+      login,
+      password,
+      role,
+      newPassword,
+    } = req.body;
 
-//     if (id !== req.user._id.toString() && req.user.role !== 'admin') {
-//       return res.sendStatus(403);
-//     }
+    if (id !== req.user._id.toString() && req.user.role !== 'admin') {
+      return res.sendStatus(403);
+    }
 
-//     let newUser = {};
+    let oldUser = await db.User.findOne({ _id: id });
+    console.log(oldUser.password);
+    let newUser = {};
 
-//     if (password && !validator.password(password)) {
-//       return res.status(400).send('Invalid password');
-//     }
+    if (password && newPassword && !validator.password(password) && (hash(password) !== oldUser.password)) {
+      return res.status(400).send('Invalid password');
+    }
 
-//     if (password) { newUser.password = hash(password); }
-//     if (email) { newUser.email = email; }
-//     if (login) { newUser.login = login; }
-//     if (role && req.user.role === 'admin') { newUser.role = role; }
+    newUser.password = hash(newPassword);
 
-//     let updatedUser = await db.User.findOneAndUpdate({ _id: id }, newUser);
+    if (email) { newUser.email = email; }
+    if (login) { newUser.login = login; }
+    if (role && req.user.role === 'admin') { newUser.role = role; }
 
-//     if (!updatedUser) {
-//       return res.sendStatus(404);
-//     }
+    let updatedUser = await db.User.findOneAndUpdate({ _id: id }, newUser);
 
-//     updatedUser = updatedUser.toJSON();
-//     delete updatedUser.password;
+    if (!updatedUser) {
+      return res.sendStatus(404);
+    }
 
-//     res.json(updatedUser);
-//   }
-//   catch (err) {
-//     const message = errorHandler(err);
+    updatedUser = updatedUser.toJSON();
+    delete updatedUser.password;
 
-//     if (message) {
-//       return res.status(400).send(message);
-//     }
+    res.json(updatedUser);
+  }
+  catch (err) {
+    const message = errorHandler(err);
 
-//     console.error(err);
-//     res.sendStatus(500);
-//   }
-// };
+    if (message) {
+      return res.status(400).send(message);
+    }
+
+    console.error(err);
+    res.sendStatus(500);
+  }
+};
 
 module.exports = {
   getUsers,
   // getUser,
   createUser,
   // deleteUser,
-  // updateUser
+  updateUser
 };
