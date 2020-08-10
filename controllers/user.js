@@ -119,21 +119,20 @@ async function updateUser(req, res) {
       return res.sendStatus(403);
     }
 
-    let oldUser = await db.User.findOne({ _id: id });
-    console.log(oldUser.password);
     let newUser = {};
 
-    if (password && newPassword && !validator.password(password) && (hash(password) !== oldUser.password)) {
-      return res.status(400).send('Invalid password');
+    if (password && newPassword) {
+      if (!validator.password(newPassword) || (hash(password) !== req.user.password)) {
+        return res.status(400).send('Invalid password');
+      }
+      newUser.password = hash(newPassword);
     }
-
-    newUser.password = hash(newPassword);
 
     if (email) { newUser.email = email; }
     if (login) { newUser.login = login; }
     if (role && req.user.role === 'admin') { newUser.role = role; }
 
-    let updatedUser = await db.User.findOneAndUpdate({ _id: id }, newUser);
+    let updatedUser = await db.User.findOneAndUpdate({ _id: id }, newUser, { useFindAndModify: false, new: true });
 
     if (!updatedUser) {
       return res.sendStatus(404);
