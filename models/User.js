@@ -28,8 +28,11 @@ const userSchema = new Schema({
   role: {
     type: String,
     required: true,
-    enum: ['client','admin'],
+    enum: ['client', 'admin'],
     default: 'client'
+  },
+  avatar: {
+    type: String,
   }
 });
 

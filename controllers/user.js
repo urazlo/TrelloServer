@@ -2,8 +2,9 @@ const db = require('../models');
 const hash = require('../utils/hash');
 const validator = require('../utils/validator');
 const errorHandler = require('../utils/errorHandler');
+const multer = require('multer');
 
-async function getUsers(req, res) {
+const getUsers = async (req, res) => {
   try {
     const users = await db.User.find({}, { "password": 0 });
 
@@ -43,7 +44,8 @@ async function getUsers(req, res) {
 //   }
 // };
 
-async function createUser(req, res) {
+
+const createUser = async (req, res) => {
   try {
     let {
       email,
@@ -103,7 +105,7 @@ async function createUser(req, res) {
 //   }
 // };
 
-async function updateUser(req, res) {
+const updateUser = async (req, res) => {
   try {
     const { id } = req.params;
 
@@ -155,10 +157,32 @@ async function updateUser(req, res) {
   }
 };
 
+const storage = multer.diskStorage({
+  destination: './public/usersAvatars',
+  filename: function (req, data, cb) {
+    cb(null, data.fieldname + '-' + Date.now());
+  }
+});
+
+const upload = multer({ storage: storage }).single('userAvatar');
+
+const uploadUserAvatar = (req, res) => {
+  upload(req, res, (err) => {
+    if (err instanceof multer.MulterError) {
+      console.log(err);
+    } else {
+      console.log(err);
+    }
+    console.log(req.data);
+    res.send('test');
+  });
+};
+
 module.exports = {
   getUsers,
   // getUser,
   createUser,
   // deleteUser,
-  updateUser
+  updateUser,
+  uploadUserAvatar,
 };
