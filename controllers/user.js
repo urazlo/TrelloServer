@@ -2,7 +2,6 @@ const db = require('../models');
 const hash = require('../utils/hash');
 const validator = require('../utils/validator');
 const errorHandler = require('../utils/errorHandler');
-const multer = require('multer');
 
 const getUsers = async (req, res) => {
   try {
@@ -157,25 +156,14 @@ const updateUser = async (req, res) => {
   }
 };
 
-const storage = multer.diskStorage({
-  destination: './public/usersAvatars',
-  filename: function (req, data, cb) {
-    cb(null, data.fieldname + '-' + Date.now());
-  }
-});
-
-const upload = multer({ storage: storage }).single('userAvatar');
-
 const uploadUserAvatar = (req, res) => {
-  upload(req, res, (err) => {
-    if (err instanceof multer.MulterError) {
-      console.log(err);
-    } else {
-      console.log(err);
-    }
-    console.log(req.data);
-    res.send('test');
-  });
+  try {
+    console.log(req.file);
+
+    return res.sendStatus(200);
+  } catch (err) {
+    console.log(err);
+  }
 };
 
 module.exports = {
