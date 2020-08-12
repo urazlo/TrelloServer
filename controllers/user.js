@@ -3,7 +3,6 @@ const hash = require('../utils/hash');
 const validator = require('../utils/validator');
 const errorHandler = require('../utils/errorHandler');
 const fs = require('fs');
-const multer = require('multer');
 
 // const getUsers = async (req, res) => {
 //   try {
@@ -162,8 +161,10 @@ const uploadUserAvatar = async (req, res) => {
     const { id } = req.user;
 
     if (!req.file) { return res.status(400).send('File not founded'); }
+    console.log('file exist');
 
     if (req.user.avatar) {
+      console.log('deleting file');
       const newPath = req.user.avatar.replace('http://localhost:4000/', 'public/');
 
       if (fs.existsSync(newPath)) { fs.unlinkSync(newPath); }
@@ -186,14 +187,6 @@ const uploadUserAvatar = async (req, res) => {
     updatedUser = updatedUser.toJSON();
     res.json(updatedUser);
   } catch (err) {
-    // if (err instanceof multer.MulterError) {
-    //   let message = '';
-    //   if (err.code === 'LIMIT_UNEXPECTED_FILE') { message = 'Tipo de archivo no permitido' };
-    //   return res.status(400).json({
-    //     ok: false,
-    //     message: message.length ? message : err.message
-    //   })
-    // }
     console.error(err);
     res.sendStatus(500);
   };

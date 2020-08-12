@@ -15,10 +15,8 @@ const avatarUpload = multer({
     const fileExt = path.extname(file.originalname.toLowerCase());
 
     if (!fileExt.match(/\.(jpg|jpeg|png)$/)) {
-      return next('Error: Not a valid image format!');
+      next(new multer.MulterError("LIMIT_UNEXPECTED_FILE", file), false);
     }
-
-    // return next( new multer.MulterError("LIMIT_UNEXPECTED_FILE") , false);
 
     next(null, true);
   }
