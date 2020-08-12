@@ -2,22 +2,24 @@ const db = require('../models');
 const hash = require('../utils/hash');
 const validator = require('../utils/validator');
 const errorHandler = require('../utils/errorHandler');
+const fs = require('fs');
+const multer = require('multer');
 
-const getUsers = async (req, res) => {
-  try {
-    const users = await db.User.find({}, { "password": 0 });
+// const getUsers = async (req, res) => {
+//   try {
+//     const users = await db.User.find({}, { "password": 0 });
 
-    if (!users) {
-      return res.sendStatus(404);
-    }
+//     if (!users) {
+//       return res.sendStatus(404);
+//     }
 
-    res.json(users);
-  }
-  catch (err) {
-    console.error(err);
-    res.sendStatus(500);
-  }
-};
+//     res.json(users);
+//   }
+//   catch (err) {
+//     console.error(err);
+//     res.sendStatus(500);
+//   }
+// };
 
 // async function getUser(req, res) {
 //   try {
@@ -43,37 +45,36 @@ const getUsers = async (req, res) => {
 //   }
 // };
 
+// const createUser = async (req, res) => {
+//   try {
+//     let {
+//       email,
+//       login,
+//       password
+//     } = req.body;
 
-const createUser = async (req, res) => {
-  try {
-    let {
-      email,
-      login,
-      password
-    } = req.body;
+//     if (!validator.password(password)) {
+//       return res.status(400).send('Invalid password');
+//     }
 
-    if (!validator.password(password)) {
-      return res.status(400).send('Invalid password');
-    }
+//     let newUser = await db.User.create({ email, login, password: hash(password) });
 
-    let newUser = await db.User.create({ email, login, password: hash(password) });
+//     newUser = newUser.toJSON();
+//     delete newUser.password;
 
-    newUser = newUser.toJSON();
-    delete newUser.password;
+//     res.json(newUser);
+//   }
+//   catch (err) {
+//     const message = errorHandler(err);
 
-    res.json(newUser);
-  }
-  catch (err) {
-    const message = errorHandler(err);
+//     if (message) {
+//       return res.status(400).send(message);
+//     }
 
-    if (message) {
-      return res.status(400).send(message);
-    }
-
-    console.error(err);
-    res.sendStatus(500);
-  }
-};
+//     console.error(err);
+//     res.sendStatus(500);
+//   }
+// };
 
 // async function deleteUser(req, res) {
 //   try {
@@ -106,7 +107,7 @@ const createUser = async (req, res) => {
 
 const updateUser = async (req, res) => {
   try {
-    const { id } = req.params;
+    const { id } = req.user;
 
     let {
       email,
@@ -120,20 +121,20 @@ const updateUser = async (req, res) => {
       return res.sendStatus(403);
     }
 
-    let newUser = {};
+    let newData = {};
 
     if (password && newPassword) {
       if (!validator.password(newPassword) || (hash(password) !== req.user.password)) {
         return res.status(400).send('Invalid password');
       }
-      newUser.password = hash(newPassword);
+      newData.password = hash(newPassword);
     }
 
-    if (email) { newUser.email = email; }
-    if (login) { newUser.login = login; }
-    if (role && req.user.role === 'admin') { newUser.role = role; }
+    if (email) { newData.email = email; }
+    if (login) { newData.login = login; }
+    if (role && req.user.role === 'admin') { newData.role = role; }
 
-    let updatedUser = await db.User.findOneAndUpdate({ _id: id }, newUser, { useFindAndModify: false, new: true });
+    let updatedUser = await db.User.findOneAndUpdate({ _id: id }, newData, { useFindAndModify: false, new: true });
 
     if (!updatedUser) {
       return res.sendStatus(404);
@@ -156,21 +157,53 @@ const updateUser = async (req, res) => {
   }
 };
 
-const uploadUserAvatar = (req, res) => {
+const uploadUserAvatar = async (req, res) => {
   try {
-    console.log(req.file);
+    const { id } = req.user;
 
-    return res.sendStatus(200);
+    if (!req.file) { return res.status(400).send('File not founded'); }
+
+    if (req.user.avatar) {
+      const newPath = req.user.avatar.replace('http://localhost:4000/', 'public/');
+
+      if (fs.existsSync(newPath)) { fs.unlinkSync(newPath); }
+    }
+
+    let newData = {};
+
+    newData.avatar = req.file.path.replace('public/', 'http://localhost:4000/');
+
+    let updatedUser = await db.User.findOneAndUpdate(
+      { _id: id },
+      newData,
+      { useFindAndModify: false, new: true }
+    );
+
+    if (!updatedUser) {
+      return res.sendStatus(404);
+    }
+
+    updatedUser = updatedUser.toJSON();
+    res.json(updatedUser);
   } catch (err) {
-    console.log(err);
-  }
-};
+    // if (err instanceof multer.MulterError) {
+    //   let message = '';
+    //   if (err.code === 'LIMIT_UNEXPECTED_FILE') { message = 'Tipo de archivo no permitido' };
+    //   return res.status(400).json({
+    //     ok: false,
+    //     message: message.length ? message : err.message
+    //   })
+    // }
+    console.error(err);
+    res.sendStatus(500);
+  };
+}
 
 module.exports = {
-  getUsers,
   // getUser,
-  createUser,
   // deleteUser,
+  // getUsers,
+  // createUser,
   updateUser,
   uploadUserAvatar,
 };
