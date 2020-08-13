@@ -36,6 +36,14 @@ const userSchema = new Schema({
   }
 });
 
+userSchema.post('findOneAndUpdate', (result) => {
+  result.avatar = 'http://localhost:4000/' + result.avatar;
+});
+
+userSchema.post('findOne', (result) => {
+  result.avatar = 'http://localhost:4000/' + result.avatar;
+});
+
 const User = mongoose.model('User', userSchema);
 
 module.exports = User;
