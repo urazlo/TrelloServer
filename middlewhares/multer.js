@@ -9,17 +9,16 @@ const storage = multer.diskStorage({
 });
 
 const avatarUpload = multer({
-  storage,
-  limits: { fileSize: 1000000 },
   fileFilter: (req, file, next) => {
     const fileExt = path.extname(file.originalname.toLowerCase());
-
     if (!fileExt.match(/\.(jpg|jpeg|png)$/)) {
-      next(new multer.MulterError("LIMIT_UNEXPECTED_FILE", file), false);
+      return next(new multer.MulterError("LIMIT_UNEXPECTED_FILE", file), false);
     }
 
     next(null, true);
-  }
+  },
+  limits: { fileSize: 1000000 },
+  storage,
 }).single('avatar');
 
 module.exports = avatarUpload;

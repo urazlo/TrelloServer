@@ -161,12 +161,9 @@ const uploadUserAvatar = async (req, res) => {
     const { id } = req.user;
 
     if (!req.file) { return res.status(400).send('File not founded'); }
-    console.log('file exist');
 
     if (req.user.avatar) {
-      console.log('deleting file');
       const newPath = req.user.avatar.replace('http://localhost:4000/', 'public/');
-
       if (fs.existsSync(newPath)) { fs.unlinkSync(newPath); }
     }
 
