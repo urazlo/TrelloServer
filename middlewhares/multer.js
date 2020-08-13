@@ -8,7 +8,7 @@ const storage = multer.diskStorage({
   },
 });
 
-const avatarUpload = multer({
+module.exports = multer({
   fileFilter: (req, file, next) => {
     const fileExt = path.extname(file.originalname.toLowerCase());
     if (!fileExt.match(/\.(jpg|jpeg|png)$/)) {
@@ -20,5 +20,3 @@ const avatarUpload = multer({
   limits: { fileSize: 1000000 },
   storage,
 }).single('avatar');
-
-module.exports = avatarUpload;

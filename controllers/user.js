@@ -3,6 +3,9 @@ const hash = require('../utils/hash');
 const validator = require('../utils/validator');
 const errorHandler = require('../utils/errorHandler');
 const fs = require('fs');
+const util = require('util');
+const asyncUnlink = util.promisify(fs.unlink);
+const asyncExists = util.promisify(fs.exists);
 
 // const getUsers = async (req, res) => {
 //   try {
@@ -133,7 +136,11 @@ const updateUser = async (req, res) => {
     if (login) { newData.login = login; }
     if (role && req.user.role === 'admin') { newData.role = role; }
 
-    let updatedUser = await db.User.findOneAndUpdate({ _id: id }, newData, { useFindAndModify: false, new: true });
+    let updatedUser = await db.User.findOneAndUpdate(
+      { _id: id },
+      newData,
+      { useFindAndModify: false, new: true }
+    );
 
     if (!updatedUser) {
       return res.sendStatus(404);
@@ -160,16 +167,16 @@ const uploadUserAvatar = async (req, res) => {
   try {
     const { id } = req.user;
 
-    if (!req.file) { return res.status(400).send('File not founded'); }
+    if (!req.file) { return res.status(400).send('File not found'); }
 
     if (req.user.avatar) {
-      const newPath = req.user.avatar.replace('http://localhost:4000/', 'public/');
-      if (fs.existsSync(newPath)) { fs.unlinkSync(newPath); }
+      const avatarPath = 'public/' + req.user.avatar;
+
+      if (await asyncExists(avatarPath)) { await asyncUnlink(avatarPath); }
     }
 
     let newData = {};
-
-    newData.avatar = req.file.path.replace('public/', 'http://localhost:4000/');
+    newData.avatar = req.file.path.replace('public/', '');
 
     let updatedUser = await db.User.findOneAndUpdate(
       { _id: id },

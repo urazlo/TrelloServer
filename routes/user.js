@@ -3,7 +3,7 @@ const express = require('express');
 const userController = require('../controllers/user');
 const router = express.Router();
 const isAuth = require('../middlewhares/isAuth');
-const avatarUpload = require('../middlewhares/multer');
+const avatarUploader = require('../middlewhares/multer');
 const multerErrorHandler = require('../middlewhares/multerErrorHandler');
 
 router.use(isAuth);
@@ -18,7 +18,7 @@ router.use(isAuth);
 
 // router.delete('/:id', userController.deleteUser);
 
-router.patch('/update-avatar', avatarUpload, multerErrorHandler, userController.uploadUserAvatar);
+router.patch('/update-avatar', avatarUploader, multerErrorHandler, userController.uploadUserAvatar);
 
 router.patch('/:id', userController.updateUser);
 
