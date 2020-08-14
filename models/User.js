@@ -1,9 +1,23 @@
 const mongoose = require('mongoose');
+const config = require('../config/localConfig.json');
 const Schema = mongoose.Schema;
 
-const validateEmail = function (email) {
+const validateEmail = (email) => {
   let re = /^\w+([\.-]?\w+)*@\w+([\.-]?\w+)*(\.\w{2,3})+$/;
   return re.test(email);
+};
+
+avatarUpdateHook = (method) => {
+  userSchema.post(method, (result) => {
+    const updatedUrl = `${config.development.baseUrl}${result.avatar}`;
+
+    if (result !== null) {
+      result.avatar = updatedUrl;
+    }
+    else {
+      result.avatar = updatedUrl;
+    };
+  });
 };
 
 const userSchema = new Schema({
@@ -36,13 +50,9 @@ const userSchema = new Schema({
   }
 });
 
-userSchema.post('findOneAndUpdate', (result) => {
-  result.avatar = 'http://localhost:4000/' + result.avatar;
-});
 
-userSchema.post('findOne', (result) => {
-  result.avatar = 'http://localhost:4000/' + result.avatar;
-});
+avatarUpdateHook('findOneAndUpdate');
+avatarUpdateHook('findOne');
 
 const User = mongoose.model('User', userSchema);
 

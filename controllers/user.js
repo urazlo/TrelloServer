@@ -183,11 +183,7 @@ const uploadUserAvatar = async (req, res) => {
       { useFindAndModify: false, new: true }
     );
 
-    if (!updatedUser) {
-      return res.sendStatus(404);
-    }
-
-    updatedUser = updatedUser.toJSON();
+       updatedUser = updatedUser.toJSON();
     res.json(updatedUser);
   } catch (err) {
     console.error(err);

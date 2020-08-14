@@ -1,6 +1,7 @@
 {
   "development": {
     "port": 4000,
+    "baseUrl": "http://localhost:4000/",
     "mongoConnection": "mongodb://localhost:27017",
     "dbName": "TrelloCloneDB",
     "jwtSecret": "12345",
