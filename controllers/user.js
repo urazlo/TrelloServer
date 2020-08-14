@@ -137,7 +137,7 @@ const updateUser = async (req, res) => {
     if (role && req.user.role === 'admin') { newData.role = role; }
 
     let updatedUser = await db.User.findOneAndUpdate(
-      { _id: id },
+      { where: { _id: id } },
       newData,
       { useFindAndModify: false, new: true }
     );
@@ -178,12 +178,12 @@ const uploadUserAvatar = async (req, res) => {
     newData.avatar = req.file.path.replace('public/', '');
 
     let updatedUser = await db.User.findOneAndUpdate(
-      { _id: id },
+      { where: { _id: id } },
       newData,
       { useFindAndModify: false, new: true }
     );
 
-       updatedUser = updatedUser.toJSON();
+    updatedUser = updatedUser.toJSON();
     res.json(updatedUser);
   } catch (err) {
     console.error(err);

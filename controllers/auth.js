@@ -3,6 +3,7 @@ const createToken = require('../utils/createToken');
 const hash = require('../utils/hash');
 const validator = require('../utils/validator');
 const errorHandler = require('../utils/errorHandler');
+const { Op } = require("sequelize");
 
 const signIn = async (req, res) => {
   try {
@@ -11,7 +12,7 @@ const signIn = async (req, res) => {
       password,
     } = req.body;
 
-    let user = await db.User.findOne({ $or: [{ email: userName }, { login: userName }] });
+    let user = await db.User.findOne({ where: { [Op.or]: [{ email: userName }, { login: userName }] } });
 
     if (!user) {
       return res.sendStatus(404);
