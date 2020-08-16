@@ -119,7 +119,7 @@ const updateUser = async (req, res) => {
       newPassword,
     } = req.body;
 
-    if (id !== req.user._id.toString() && req.user.role !== 'admin') {
+    if (id !== req.user.id && req.user.role !== 'admin') {
       return res.sendStatus(403);
     }
 
@@ -136,15 +136,11 @@ const updateUser = async (req, res) => {
     if (login) { newData.login = login; }
     if (role && req.user.role === 'admin') { newData.role = role; }
 
-    let updatedUser = await db.User.findOneAndUpdate(
-      { where: { _id: id } },
-      newData,
-      { useFindAndModify: false, new: true }
-    );
+    let updatedUser = await db.User.findOne({ where: { id } }, { hooks: false, individualHooks: false });
 
-    if (!updatedUser) {
-      return res.sendStatus(404);
-    }
+    if (!updatedUser) { return res.sendStatus(404); }
+
+    await updatedUser.update(newData);
 
     updatedUser = updatedUser.toJSON();
     delete updatedUser.password;
@@ -170,32 +166,23 @@ const uploadUserAvatar = async (req, res) => {
     if (!req.file) { return res.status(400).send('File not found'); }
 
     if (req.user.avatar) {
-      const avatarPath = req.user.avatar.replace('http://localhost:5432/', 'public/');
+      const avatarPath = `public/${req.user.avatar}`;
+
       if (await asyncExists(avatarPath)) { await asyncUnlink(avatarPath); }
     }
 
     let newData = {};
     newData.avatar = req.file.path.replace('public/', '');
 
-    let updatedUser = await db.User.findOneAndUpdate(
-      { where: { _id: id } },
-      newData,
-      { useFindAndModify: false, new: true }
-    );
+    let updatedUser = await db.User.findOne({ where: { id } });
 
-    //  let updatedUser = await db.User.update(
-    //   newData, {
-    //   where: { id: id },
-    //   returning: true,
-    //   // individualHooks: true,
-    //   plain: true,
-    // });
+    if (!updatedUser) { return res.sendStatus(404); }
 
-    // if (!updatedUser) { return res.sendStatus(404); }
-
-    // console.log(updatedUser[1]);
+    await updatedUser.update(newData, { individualHooks: true });
 
     updatedUser = updatedUser.toJSON();
+    delete updatedUser.password;
+
     res.json(updatedUser);
   } catch (err) {
     console.error(err);

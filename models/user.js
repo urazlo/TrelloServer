@@ -1,4 +1,14 @@
+const config = require('../config/');
+
 'use strict';
+
+const avatarUpdateHook = (instance) => {
+  const updatedUrl = `${config.baseUrl}${instance.avatar}`;
+
+  if (instance !== null) { instance.avatar = updatedUrl; }
+  else { instance.avatar = updatedUrl; };
+};
+
 const {
   Model
 } = require('sequelize');
@@ -47,18 +57,8 @@ module.exports = (sequelize, DataTypes) => {
     modelName: 'User',
   });
 
-  User.afterUpdate((result, options) => {
-    // const updatedUrl = `http://localhost:5423/${result.attributes.avatar}`;
-
-    // if (result !== null) {
-    //   result.attributes.avatar = updatedUrl;
-    // }
-    // else {
-    //   result.attributes.avatar = updatedUrl;
-    // };
-
-    // console.log(result);
-  });
+  User.afterUpdate((instance) => { avatarUpdateHook(instance) });
+  User.afterFind((instance) => { avatarUpdateHook(instance) });
 
   return User;
 };

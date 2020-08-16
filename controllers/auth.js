@@ -28,7 +28,7 @@ const signIn = async (req, res) => {
 
     res.json({
       user,
-      token: createToken({ id: user._id })
+      token: createToken({ id: user.id })
     })
   }
   catch (err) {
@@ -65,7 +65,7 @@ const signUp = async (req, res) => {
 
     res.json({
       user,
-      token: createToken({ id: user._id })
+      token: createToken({ id: user.id })
     })
   }
   catch (err) {

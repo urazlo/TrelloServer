@@ -5,21 +5,13 @@ const config = require('../config/');
 module.exports = async (req, res, next) => {
   try {
     const token = (req.headers.authorization || '').substring(7);
-
     const { id } = jwt.verify(token, config.jwtSecret);
 
-    console.log(jwt.verify(token, config.jwtSecret));
-    
-    const user = await db.User.findOne({ _id: id });
-  
-    console.log(user);
+    const user = await db.User.findOne({ where: { id } });
 
-    if (!user) {
-      return res.sendStatus(403);
-    }
+    if (!user) { return res.sendStatus(403); }
 
     req.user = user;
-    
     next();
   } catch (err) {
     if (err.message === 'jwt expired') {
