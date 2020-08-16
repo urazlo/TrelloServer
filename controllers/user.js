@@ -170,7 +170,7 @@ const uploadUserAvatar = async (req, res) => {
     if (!req.file) { return res.status(400).send('File not found'); }
 
     if (req.user.avatar) {
-      const avatarPath = req.user.avatar.replace('http://localhost:4000/', 'public/');
+      const avatarPath = req.user.avatar.replace('http://localhost:5432/', 'public/');
       if (await asyncExists(avatarPath)) { await asyncUnlink(avatarPath); }
     }
 
@@ -182,6 +182,18 @@ const uploadUserAvatar = async (req, res) => {
       newData,
       { useFindAndModify: false, new: true }
     );
+
+    //  let updatedUser = await db.User.update(
+    //   newData, {
+    //   where: { id: id },
+    //   returning: true,
+    //   // individualHooks: true,
+    //   plain: true,
+    // });
+
+    // if (!updatedUser) { return res.sendStatus(404); }
+
+    // console.log(updatedUser[1]);
 
     updatedUser = updatedUser.toJSON();
     res.json(updatedUser);

@@ -7,9 +7,13 @@ module.exports = async (req, res, next) => {
     const token = (req.headers.authorization || '').substring(7);
 
     const { id } = jwt.verify(token, config.jwtSecret);
+
+    console.log(jwt.verify(token, config.jwtSecret));
     
     const user = await db.User.findOne({ _id: id });
   
+    console.log(user);
+
     if (!user) {
       return res.sendStatus(403);
     }
