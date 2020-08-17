@@ -1,12 +1,11 @@
-const config = require('../config/');
-
 'use strict';
 
-const avatarUpdateHook = (instance) => {
-  const updatedUrl = `${config.baseUrl}${instance.avatar}`;
+const config = require('../config');
 
-  if (instance !== null) { instance.avatar = updatedUrl; }
-  else { instance.avatar = updatedUrl; };
+const avatarUpdateHook = (user) => {
+  if (user !== null) {
+    user.avatar = `${config.baseUrl}${user.avatar}`;
+  }
 };
 
 const {
@@ -14,30 +13,38 @@ const {
 } = require('sequelize');
 module.exports = (sequelize, DataTypes) => {
   class User extends Model {
-    /**
- * Helper method for defining associations.
- * This method is not a part of Sequelize lifecycle.
- * The `models/index` file will call this method automatically.
- */
+
     static associate(models) {
-      // define association here
+      User.hasMany(models.Board, { onDelete: 'CASCADE' });
     }
   };
   User.init({
     email: {
       allowNull: false,
-      unique: true,
+      unique: {
+        args: true,
+        msg: 'Email must be unique',
+      },
       type: DataTypes.STRING,
       validate: {
-        isEmail: true,
+        isEmail: {
+          args: true,
+          msg: 'Invalid email',
+        },
       },
     },
     login: {
       allowNull: false,
       type: DataTypes.STRING,
-      unique: true,
+      unique: {
+        args: true,
+        msg: 'Login must be unique',
+      },
       validate: {
-        len: [3, 25],
+        len: {
+          args: [3, 25],
+          msg: 'Invalid login',
+        },
       },
     },
     password: {
@@ -57,8 +64,8 @@ module.exports = (sequelize, DataTypes) => {
     modelName: 'User',
   });
 
-  User.afterUpdate((instance) => { avatarUpdateHook(instance) });
-  User.afterFind((instance) => { avatarUpdateHook(instance) });
+  User.afterFind(user => { avatarUpdateHook(user); });
+  User.afterUpdate(user => { avatarUpdateHook(user); });
 
   return User;
 };

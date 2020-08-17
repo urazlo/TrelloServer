@@ -1,9 +1,10 @@
+const fs = require('fs');
+const util = require('util');
 const db = require('../models');
 const hash = require('../utils/hash');
 const validator = require('../utils/validator');
+const config = require('../config/');
 const errorHandler = require('../utils/errorHandler');
-const fs = require('fs');
-const util = require('util');
 const asyncUnlink = util.promisify(fs.unlink);
 const asyncExists = util.promisify(fs.exists);
 
@@ -136,11 +137,9 @@ const updateUser = async (req, res) => {
     if (login) { newData.login = login; }
     if (role && req.user.role === 'admin') { newData.role = role; }
 
-    let updatedUser = await db.User.findOne({ where: { id } }, { hooks: false, individualHooks: false });
-
-    if (!updatedUser) { return res.sendStatus(404); }
-
-    await updatedUser.update(newData);
+    let [, [updatedUser]] = await db.User.update(
+      newData,
+      { where: { id }, returning: true, individualHooks: true });
 
     updatedUser = updatedUser.toJSON();
     delete updatedUser.password;
@@ -150,9 +149,7 @@ const updateUser = async (req, res) => {
   catch (err) {
     const message = errorHandler(err);
 
-    if (message) {
-      return res.status(400).send(message);
-    }
+    if (message) { return res.status(400).send(message); }
 
     console.error(err);
     res.sendStatus(500);
@@ -162,23 +159,22 @@ const updateUser = async (req, res) => {
 const uploadUserAvatar = async (req, res) => {
   try {
     const { id } = req.user;
-
     if (!req.file) { return res.status(400).send('File not found'); }
 
     if (req.user.avatar) {
-      const avatarPath = `public/${req.user.avatar}`;
+      const avatarPath = req.user.avatar.replace(`${config.baseUrl}`, 'public/');
 
       if (await asyncExists(avatarPath)) { await asyncUnlink(avatarPath); }
     }
 
     let newData = {};
+    let updatedUser = {};
+
     newData.avatar = req.file.path.replace('public/', '');
 
-    let updatedUser = await db.User.findOne({ where: { id } });
-
-    if (!updatedUser) { return res.sendStatus(404); }
-
-    await updatedUser.update(newData, { individualHooks: true });
+    [, [updatedUser]] = await db.User.update(
+      newData,
+      { where: { id }, returning: true, individualHooks: true });
 
     updatedUser = updatedUser.toJSON();
     delete updatedUser.password;
