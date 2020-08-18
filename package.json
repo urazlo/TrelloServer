@@ -14,7 +14,9 @@
   },
   "scripts": {
     "start": "nodemon server.js",
-    "findPid": "sudo ss -lptn 'sport = :4000'"
+    "findPid": "sudo ss -lptn 'sport = :4000'",
+    "migration": "npx sequelize-cli db:migrate",
+    "undo": "npx sequelize-cli db:migrate:undo"
   },
   "devDependencies": {
     "nodemon": "^2.0.4",

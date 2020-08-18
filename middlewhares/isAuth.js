@@ -11,7 +11,7 @@ module.exports = async (req, res, next) => {
       where: { id }, include: [
         {
           model: db.Board,
-          attributes: ['ownerId', 'id', 'title',],
+          attributes: ['userId', 'id', 'title'],
         },
       ],
     });

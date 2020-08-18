@@ -8,21 +8,20 @@ module.exports = (sequelize, DataTypes) => {
 
     static associate(models) {
       Board.belongsTo(models.User, {
-        foreignKey: 'ownerId',
+        foreignKey: 'id',
         onDelete: 'CASCADE',
       });
     }
   };
   Board.init({
-    ownerId: {
+    userId: {
       allowNull: false,
       type: DataTypes.INTEGER,
-      unique: true,
       onDelete: 'CASCADE',
-      // references: {
-      //   model: 'User',
-      //   key: 'id',
-      // },
+      references: {
+        model: 'Users',
+        key: 'id',
+      },
     },
     title: {
       allowNull: false,

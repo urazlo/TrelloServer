@@ -8,10 +8,9 @@ module.exports = {
         primaryKey: true,
         type: Sequelize.INTEGER
       },
-      ownerId: {
+      userId: {
         allowNull: false,
         type: Sequelize.INTEGER,
-        unique: true,
         references: {
           model: 'Users',
           key: 'id',

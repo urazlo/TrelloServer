@@ -15,7 +15,7 @@ module.exports = (sequelize, DataTypes) => {
   class User extends Model {
 
     static associate(models) {
-      User.hasMany(models.Board, { onDelete: 'CASCADE' });
+      User.hasMany(models.Board, { foreignKey: 'userId' });
     }
   };
   User.init({

@@ -82,8 +82,15 @@ const signUp = async (req, res) => {
 
 const check = async (req, res) => {
   try {
-    // db.Border.create({ title: "The great KEK", ownerID: 18, id: 1 });
     const user = req.user.toJSON();
+
+    // let board = await db.Board.create(
+    //   {
+    //     "title": "keks",
+    //     "userId": "1",
+    //   }
+    // );
+    // console.log(board);
 
     delete user.password;
 
