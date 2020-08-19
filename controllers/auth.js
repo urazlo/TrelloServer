@@ -84,14 +84,6 @@ const check = async (req, res) => {
   try {
     const user = req.user.toJSON();
 
-    // let board = await db.Board.create(
-    //   {
-    //     "title": "keks",
-    //     "userId": "1",
-    //   }
-    // );
-    // console.log(board);
-
     delete user.password;
 
     res.json(user)
