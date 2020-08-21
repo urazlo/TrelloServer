@@ -26,65 +26,53 @@ const createBoard = async (req, res) => {
   }
 };
 
-// const updateBoard = async (req, res) => {
-//   try {
-//     const { id } = req.user;
+const updateBoard = async (req, res) => {
+  try {
+    const { id } = req.params;
 
-//     let { title } = req.body;
+    let { title, userId } = req.body;
+    if (userId !== req.user.id.toString() && req.user.role !== 'admin') {
+      return res.sendStatus(403);
+    }
+    if (!title) { return res.sendStatus(400); }
+    let [, [updatedBoard]] = await Board.update(
+      { title },
+      { where: { id }, returning: true, individualHooks: true }
+    );
 
-//     if (id !== req.user.id && req.user.role !== 'admin') {
-//       return res.sendStatus(403);
-//     }
+    updatedBoard = updatedBoard.toJSON();
 
-//     if (!title) { return res.sendStatus(400); }
+    res.json(updatedBoard);
+  }
+  catch (err) {
+    console.error(err);
+    res.sendStatus(500);
+  }
+};
 
-//     let [, [updatedBoard]] = await db.Board.update(
-//       title,
-//       { where: { id }, returning: true, individualHooks: true });
+async function deleteBoard(req, res) {
+  try {
+    const { id } = req.params;
 
-//     updatedBoard = updatedBoard.toJSON();
+    await Board.destroy({ where: { id } });
 
-//     res.json(updatedUser);
-//   }
-//   catch (err) {
-//     const message = errorHandler(err);
+    res.sendStatus(204);
+  }
+  catch (err) {
+    const message = errorHandler(err);
 
-//     if (message) { return res.status(400).send(message); }
+    if (message) {
+      return res.status(400).send(message);
+    }
 
-//     console.error(err);
-//     res.sendStatus(500);
-//   }
-// };
-
-
-// async function deleteBoard(req, res) {
-//   try {
-//     const { id } = req.params;
-
-//     if (id !== req.user.id && req.user.role !== 'admin') {
-//       return res.sendStatus(403);
-//     }
-    
-//     await Board.destroy({ where: { id } });
-
-
-//     res.sendStatus(204);
-//   }
-//   catch (err) {
-//     const message = errorHandler(err);
-
-//     if (message) {
-//       return res.status(400).send(message);
-//     }
-
-//     console.error(err);
-//     res.sendStatus(500);
-//   }
-// };
+    console.error(err);
+    res.sendStatus(500);
+  }
+};
 
 module.exports = {
   createBoard,
   getUserBoards,
-  // updateBoard,
-  // deleteBoard,
+  updateBoard,
+  deleteBoard,
 };

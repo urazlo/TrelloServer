@@ -4,23 +4,22 @@ const {
   Model
 } = require('sequelize');
 module.exports = (sequelize, DataTypes) => {
-  class Board extends Model {
+  class Column extends Model {
 
     static associate(models) {
-      Board.belongsTo(models.User, {
+      Column.belongsTo(models.Board, {
         foreignKey: 'id',
         onDelete: 'CASCADE',
       });
-      Board.hasMany(models.Column, { foreignKey: 'boardId' });
     }
   };
-  Board.init({
-    userId: {
+  Column.init({
+    boardId: {
       allowNull: false,
       type: DataTypes.INTEGER,
       onDelete: 'CASCADE',
       references: {
-        model: 'Users',
+        model: 'Boards',
         key: 'id',
       },
     },
@@ -30,8 +29,8 @@ module.exports = (sequelize, DataTypes) => {
     },
   }, {
     sequelize,
-    modelName: 'Board',
+    modelName: 'Column',
   });
 
-  return Board;
+  return Column;
 };

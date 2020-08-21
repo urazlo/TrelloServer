@@ -10,6 +10,8 @@ router.get('/', userController.getUserBoards);
 
 router.post('/', userController.createBoard);
 
-// router.patch('/:id', userController.updateBoard);
+router.delete('/:id', userController.deleteBoard);
+
+router.patch('/:id', userController.updateBoard);
 
 module.exports = router;
