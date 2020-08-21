@@ -7,14 +7,7 @@ module.exports = async (req, res, next) => {
     const token = (req.headers.authorization || '').substring(7);
     const { id } = jwt.verify(token, config.jwtSecret);
 
-    const user = await db.User.findOne({
-      where: { id }, include: [
-        {
-          model: db.Board,
-          attributes: ['userId', 'id', 'title'],
-        },
-      ],
-    });
+    const user = await db.User.findOne({ where: { id } });
 
     if (!user) { return res.sendStatus(403); }
 

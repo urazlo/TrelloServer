@@ -6,6 +6,8 @@ const isAuth = require('../middlewhares/isAuth');
 
 router.use(isAuth);
 
+router.get('/', userController.getUserBoards);
+
 router.post('/', userController.createBoard);
 
 // router.patch('/:id', userController.updateBoard);
