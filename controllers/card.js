@@ -1,37 +1,35 @@
-const { Column } = require('../models');
+const { Card } = require('../models');
 
-async function getColumns(req, res) {
+async function getCards(req, res) {
   try {
-    const { id } = req.params;
-    const userColumns = await Column.findAll({ where: { boardId: id } });
-    res.json(userColumns);
+    const userCards = await Card.findAll();
+    res.json(userCards);
   }
   catch (err) {
-    console.error(err);
+    console.error(err.message);
     res.sendStatus(500);
   }
 };
 
-const createColumn = async (req, res) => {
+const createCard = async (req, res) => {
   try {
-    let { title, boardId } = req.body;
+    let { cardInputValue, columnId } = req.body;
+    let card = await Card.create({ title: cardInputValue, columnId });
 
-    let column = await Column.create({ title, boardId });
-
-    column = column.toJSON();
-    res.json(column);
+    card = card.toJSON();
+    res.json(card);
   }
   catch (err) {
-    console.error(err);
+    console.error(err.message);
     res.sendStatus(500);
   }
 };
 
-const updateColumn = async (req, res) => {
+const updateCard = async (req, res) => {
   try {
     const { id } = req.params;
 
-    let { title, columnId } = req.body;
+    let { title, cardId } = req.body;
 
     if (id !== req.user.id.toString() && req.user.role !== 'admin') {
       return res.sendStatus(403);
@@ -39,16 +37,16 @@ const updateColumn = async (req, res) => {
 
     if (!title) { return res.sendStatus(400); }
 
-    let [, [updatedColumn]] = await Column.update(
+    let [, [updatedCard]] = await Card.update(
       { title },
       {
-        where: { id: columnId },
+        where: { id: cardId },
         returning: true, individualHooks: true
       }
     );
 
-    updatedColumn = updatedColumn.toJSON();
-    res.json(updatedColumn);
+    updatedCard = updatedCard.toJSON();
+    res.json(updatedCard);
   }
   catch (err) {
     console.error(err);
@@ -56,7 +54,7 @@ const updateColumn = async (req, res) => {
   }
 };
 
-// async function deleteColumn(req, res) {
+// async function deleteCard(req, res) {
 //   try {
 //     const { id } = req.params;
 
@@ -77,8 +75,8 @@ const updateColumn = async (req, res) => {
 // };
 
 module.exports = {
-  createColumn,
-  getColumns,
-  updateColumn,
-  // deleteColumn,
+  createCard,
+  getCards,
+  updateCard,
+  // deleteCard,
 };

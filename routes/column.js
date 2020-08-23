@@ -12,6 +12,6 @@ router.get('/:id', userController.getColumns);
 
 // router.delete('/:id', userController.deleteColumn);
 
-// router.patch('/:id', userController.updateColumn);
+router.patch('/:id', userController.updateColumn);
 
 module.exports = router;
