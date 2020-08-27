@@ -17,6 +17,6 @@ module.exports = multer({
 
     next(null, true);
   },
-  limits: { fileSize: 1000000 },
+  limits: { fileSize: 2000000 },
   storage,
 }).single('avatar');

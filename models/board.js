@@ -7,11 +7,8 @@ module.exports = (sequelize, DataTypes) => {
   class Board extends Model {
 
     static associate(models) {
-      Board.belongsTo(models.User, {
-        foreignKey: 'id',
-        onDelete: 'CASCADE',
-      });
-      Board.hasMany(models.Column, { foreignKey: 'boardId' });
+      Board.belongsTo(models.User, { foreignKey: 'id', onDelete: 'CASCADE' });
+      Board.hasMany(models.Column, { foreignKey: 'boardId', onDelete: 'CASCADE' });
     }
   };
   Board.init({

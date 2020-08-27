@@ -11,6 +11,7 @@ module.exports = {
       columnId: {
         allowNull: false,
         type: Sequelize.INTEGER,
+        onDelete: 'CASCADE',
         references: {
           model: 'Columns',
           key: 'id',

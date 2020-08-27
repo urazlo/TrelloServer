@@ -7,10 +7,7 @@ module.exports = (sequelize, DataTypes) => {
   class Card extends Model {
 
     static associate(models) {
-      Card.belongsTo(models.Column, {
-        foreignKey: 'id',
-        onDelete: 'CASCADE',
-      });
+      Card.belongsTo(models.Column, { foreignKey: 'id', onDelete: 'CASCADE' });
     }
   };
   Card.init({

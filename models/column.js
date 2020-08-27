@@ -7,11 +7,8 @@ module.exports = (sequelize, DataTypes) => {
   class Column extends Model {
 
     static associate(models) {
-      Column.belongsTo(models.Board, {
-        foreignKey: 'id',
-        onDelete: 'CASCADE',
-      });
-      Column.hasMany(models.Card, { foreignKey: 'columnId' });
+      Column.belongsTo(models.Board, { foreignKey: 'id', onDelete: 'CASCADE' });
+      Column.hasMany(models.Card, { foreignKey: 'columnId', onDelete: 'CASCADE' });
     }
   };
   Column.init({
